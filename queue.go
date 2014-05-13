@@ -11,17 +11,18 @@ package queue
 
 const minQueueLen = 16
 
+// Queue represents a single instance of the queue data structure.
 type Queue struct {
 	buf               []interface{}
 	head, tail, count int
 }
 
-// New constructs and returns a new Queue
+// New constructs and returns a new Queue.
 func New() *Queue {
 	return &Queue{buf: make([]interface{}, minQueueLen)}
 }
 
-// Length returns the number of elements currently stored in the queue
+// Length returns the number of elements currently stored in the queue.
 func (q *Queue) Length() int {
 	return q.count
 }
@@ -41,7 +42,7 @@ func (q *Queue) resize() {
 	q.buf = newBuf
 }
 
-// Add puts an element on the end of the queue
+// Add puts an element on the end of the queue.
 func (q *Queue) Add(elem interface{}) {
 	if q.count == len(q.buf) {
 		q.resize()
