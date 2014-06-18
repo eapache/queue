@@ -66,8 +66,7 @@ func (q *Queue) Get(i int) interface{} {
 	if i >= q.Length() || i < 0 {
 		panic("queue: index out of range")
 	}
-	modi := (q.head + i) % len(q.buf)
-	return q.buf[modi]
+	return q.buf[(q.head+i)%len(q.buf)]
 }
 
 // Remove removes the element from the front of the queue. If you actually
