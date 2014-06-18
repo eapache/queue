@@ -59,6 +59,16 @@ func (q *Queue) Peek() interface{} {
 	return q.buf[q.head]
 }
 
+// Get returns the element at index i in the queue. If the index is invalid, the
+// call will panic.
+func (q *Queue) Get(i int) interface{} {
+	if i >= q.Length() || i < 0 {
+		panic("index out of range")
+	}
+	modi := (q.head + i) % len(q.buf)
+	return q.buf[modi]
+}
+
 // Remove removes the element from the front of the queue. If you actually want the element,
 // call Peek first. If the queue is empty (Length == 0), Remove will put the queue in a bad
 // state and all further operations will be undefined.

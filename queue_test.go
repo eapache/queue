@@ -12,15 +12,64 @@ func TestQueueLength(t *testing.T) {
 	for i := 0; i < 1000; i++ {
 		q.Add(i)
 		if q.Length() != i+1 {
-			t.Error("adding: queue with", i , "elements has length", q.Length())
+			t.Error("adding: queue with", i, "elements has length", q.Length())
 		}
 	}
 	for i := 0; i < 1000; i++ {
 		q.Remove()
 		if q.Length() != 1000-i-1 {
-			t.Error("removing: queue with", 1000-i-i , "elements has length", q.Length())
+			t.Error("removing: queue with", 1000-i-i, "elements has length", q.Length())
 		}
 	}
+}
+
+func TestQueueGet(t *testing.T) {
+	q := New()
+
+	for i := 0; i < 1000; i++ {
+		q.Add(i)
+		for j := 0; j < q.Length(); j++ {
+			if q.Get(j).(int) != j {
+				t.Errorf("index %d doesn't contain %d", j, j)
+			}
+		}
+	}
+}
+
+func TestQueueGetOutOfRangePanics(t *testing.T) {
+	q := New()
+
+	q.Add(1)
+	q.Add(2)
+	q.Add(3)
+
+	func() {
+		defer func() {
+			if r := recover(); r == nil {
+				t.Errorf("should panic when negative index")
+			} else {
+				t.Logf("got panic as expected: %v", r)
+			}
+		}()
+
+		func() {
+			q.Get(-1)
+		}()
+	}()
+
+	func() {
+		defer func() {
+			if r := recover(); r == nil {
+				t.Errorf("should panic when index greater than length")
+			} else {
+				t.Logf("got panic as expected: %v", r)
+			}
+		}()
+
+		func() {
+			q.Get(4)
+		}()
+	}()
 }
 
 // General warning: Go's benchmark utility (go test -bench .) increases the number of
