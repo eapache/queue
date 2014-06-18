@@ -43,33 +43,55 @@ func TestQueueGetOutOfRangePanics(t *testing.T) {
 	q.Add(2)
 	q.Add(3)
 
-	func() {
-		defer func() {
-			if r := recover(); r == nil {
-				t.Errorf("should panic when negative index")
-			} else {
-				t.Logf("got panic as expected: %v", r)
-			}
-		}()
+	assertPanics(t, "should panic when negative index", func() {
+		q.Get(-1)
+	})
 
-		func() {
-			q.Get(-1)
-		}()
+	assertPanics(t, "should panic when index greater than length", func() {
+		q.Get(4)
+	})
+}
+
+func TestQueuePeekOutOfRangePanics(t *testing.T) {
+	q := New()
+
+	assertPanics(t, "should panic when peeking empty queue", func() {
+		q.Peek()
+	})
+
+	q.Add(1)
+	q.Remove()
+
+	assertPanics(t, "should panic when peeking emptied queue", func() {
+		q.Peek()
+	})
+}
+
+func TestQueueRemoveOutOfRangePanics(t *testing.T) {
+	q := New()
+
+	assertPanics(t, "should panic when removing empty queue", func() {
+		q.Remove()
+	})
+
+	q.Add(1)
+	q.Remove()
+
+	assertPanics(t, "should panic when removing emptied queue", func() {
+		q.Remove()
+	})
+}
+
+func assertPanics(t *testing.T, name string, f func()) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("%s: didn't panic as expected", name)
+		} else {
+			t.Logf("%s: got panic as expected: %v", name, r)
+		}
 	}()
 
-	func() {
-		defer func() {
-			if r := recover(); r == nil {
-				t.Errorf("should panic when index greater than length")
-			} else {
-				t.Logf("got panic as expected: %v", r)
-			}
-		}()
-
-		func() {
-			q.Get(4)
-		}()
-	}()
+	f()
 }
 
 // General warning: Go's benchmark utility (go test -bench .) increases the number of
@@ -84,6 +106,17 @@ func BenchmarkQueueSerial(b *testing.B) {
 	}
 	for i := 0; i < b.N; i++ {
 		q.Remove()
+	}
+}
+
+func BenchmarkQueueGet(b *testing.B) {
+	q := New()
+	for i := 0; i < b.N; i++ {
+		q.Add(i)
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		q.Get(i)
 	}
 }
 
