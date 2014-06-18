@@ -12,15 +12,86 @@ func TestQueueLength(t *testing.T) {
 	for i := 0; i < 1000; i++ {
 		q.Add(i)
 		if q.Length() != i+1 {
-			t.Error("adding: queue with", i , "elements has length", q.Length())
+			t.Error("adding: queue with", i, "elements has length", q.Length())
 		}
 	}
 	for i := 0; i < 1000; i++ {
 		q.Remove()
 		if q.Length() != 1000-i-1 {
-			t.Error("removing: queue with", 1000-i-i , "elements has length", q.Length())
+			t.Error("removing: queue with", 1000-i-i, "elements has length", q.Length())
 		}
 	}
+}
+
+func TestQueueGet(t *testing.T) {
+	q := New()
+
+	for i := 0; i < 1000; i++ {
+		q.Add(i)
+		for j := 0; j < q.Length(); j++ {
+			if q.Get(j).(int) != j {
+				t.Errorf("index %d doesn't contain %d", j, j)
+			}
+		}
+	}
+}
+
+func TestQueueGetOutOfRangePanics(t *testing.T) {
+	q := New()
+
+	q.Add(1)
+	q.Add(2)
+	q.Add(3)
+
+	assertPanics(t, "should panic when negative index", func() {
+		q.Get(-1)
+	})
+
+	assertPanics(t, "should panic when index greater than length", func() {
+		q.Get(4)
+	})
+}
+
+func TestQueuePeekOutOfRangePanics(t *testing.T) {
+	q := New()
+
+	assertPanics(t, "should panic when peeking empty queue", func() {
+		q.Peek()
+	})
+
+	q.Add(1)
+	q.Remove()
+
+	assertPanics(t, "should panic when peeking emptied queue", func() {
+		q.Peek()
+	})
+}
+
+func TestQueueRemoveOutOfRangePanics(t *testing.T) {
+	q := New()
+
+	assertPanics(t, "should panic when removing empty queue", func() {
+		q.Remove()
+	})
+
+	q.Add(1)
+	q.Remove()
+
+	assertPanics(t, "should panic when removing emptied queue", func() {
+		q.Remove()
+	})
+}
+
+func assertPanics(t *testing.T, name string, f func()) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("%s: didn't panic as expected", name)
+		} else {
+			t.Logf("%s: got panic as expected: %v", name, r)
+		}
+	}()
+
+	f()
 }
 
 // General warning: Go's benchmark utility (go test -bench .) increases the number of
@@ -35,6 +106,17 @@ func BenchmarkQueueSerial(b *testing.B) {
 	}
 	for i := 0; i < b.N; i++ {
 		q.Remove()
+	}
+}
+
+func BenchmarkQueueGet(b *testing.B) {
+	q := New()
+	for i := 0; i < b.N; i++ {
+		q.Add(i)
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		q.Get(i)
 	}
 }
 
