@@ -54,7 +54,7 @@ func (q *Queue) Add(elem interface{}) {
 // Peek returns the element at the head of the queue. This call panics
 // if the queue is empty.
 func (q *Queue) Peek() interface{} {
-	if q.Length() <= 0 {
+	if q.count <= 0 {
 		panic("queue: empty queue")
 	}
 	return q.buf[q.head]
@@ -63,7 +63,7 @@ func (q *Queue) Peek() interface{} {
 // Get returns the element at index i in the queue. If the index is
 // invalid, the call will panic.
 func (q *Queue) Get(i int) interface{} {
-	if i >= q.Length() || i < 0 {
+	if i >= q.count || i < 0 {
 		panic("queue: index out of range")
 	}
 	return q.buf[(q.head+i)%len(q.buf)]
@@ -72,7 +72,7 @@ func (q *Queue) Get(i int) interface{} {
 // Remove removes the element from the front of the queue. If you actually
 // want the element, call Peek first. This call panics if the queue is empty.
 func (q *Queue) Remove() {
-	if q.Length() <= 0 {
+	if q.count <= 0 {
 		panic("queue: empty queue")
 	}
 	q.buf[q.head] = nil
