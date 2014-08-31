@@ -105,6 +105,7 @@ func BenchmarkQueueSerial(b *testing.B) {
 		q.Add(nil)
 	}
 	for i := 0; i < b.N; i++ {
+		q.Peek()
 		q.Remove()
 	}
 }
@@ -124,6 +125,7 @@ func BenchmarkQueueTickTock(b *testing.B) {
 	q := New()
 	for i := 0; i < b.N; i++ {
 		q.Add(nil)
+		q.Peek()
 		q.Remove()
 	}
 }
