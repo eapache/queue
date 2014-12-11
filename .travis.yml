@@ -3,4 +3,4 @@ language: go
 go:
     - 1.2
     - 1.3
-    - tip
+    - 1.4
