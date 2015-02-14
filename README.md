@@ -9,3 +9,7 @@ Using this instead of other, simpler, queue implementations (slice+append or lin
 substantial memory and time benefits, and fewer GC pauses.
 
 The queue implemented here is as fast as it is in part because it is *not* thread-safe.
+
+Follows semantic versioning using https://gopkg.in/ - import from
+[`gopkg.in/eapache/queue.v1`](https://gopkg.in/eapache/queue.v1)
+for guaranteed API stability.
