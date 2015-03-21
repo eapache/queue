@@ -17,7 +17,9 @@ type Queue struct {
 
 // New constructs and returns a new Queue.
 func New() *Queue {
-	return &Queue{buf: make([]interface{}, minQueueLen)}
+	return &Queue{
+		buf: make([]interface{}, minQueueLen),
+	}
 }
 
 // Length returns the number of elements currently stored in the queue.
