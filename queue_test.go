@@ -119,8 +119,6 @@ func assertPanics(t *testing.T, name string, f func()) {
 	defer func() {
 		if r := recover(); r == nil {
 			t.Errorf("%s: didn't panic as expected", name)
-		} else {
-			t.Logf("%s: got panic as expected: %v", name, r)
 		}
 	}()
 
