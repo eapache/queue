@@ -27,6 +27,8 @@ func (q *Queue) Length() int {
 	return q.count
 }
 
+// resizes the queue to fit exactly twice its current contents
+// this can result in shrinking if the queue is less than half-full
 func (q *Queue) resize() {
 	newBuf := make([]interface{}, q.count*2)
 
@@ -65,7 +67,7 @@ func (q *Queue) Peek() interface{} {
 // Get returns the element at index i in the queue. If the index is
 // invalid, the call will panic.
 func (q *Queue) Get(i int) interface{} {
-	if i >= q.count || i < 0 {
+	if i < 0 || i >= q.count {
 		panic("queue: Get() called with index out of range")
 	}
 	return q.buf[(q.head+i)%len(q.buf)]
