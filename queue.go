@@ -7,6 +7,10 @@ The queue implemented here is as fast as it is for an additional reason: it is *
 */
 package queue
 
+import (
+	"errors"
+)
+
 const minQueueLen = 16
 
 // Queue represents a single instance of the queue data structure.
@@ -57,27 +61,37 @@ func (q *Queue) Add(elem interface{}) {
 
 // Peek returns the element at the head of the queue. This call panics
 // if the queue is empty.
-func (q *Queue) Peek() interface{} {
+func (q *Queue) Peek() (interface{}, error) {
 	if q.count <= 0 {
-		panic("queue: Peek() called on empty queue")
+		return nil, errors.New("queue: Peek() called on empty queue")
 	}
-	return q.buf[q.head]
+	return q.buf[q.head], nil
 }
 
 // Get returns the element at index i in the queue. If the index is
 // invalid, the call will panic.
-func (q *Queue) Get(i int) interface{} {
+func (q *Queue) Get(i int) (interface{}, error) {
 	if i < 0 || i >= q.count {
-		panic("queue: Get() called with index out of range")
+		return nil, errors.New("queue: Get() called with index out of range")
 	}
-	return q.buf[(q.head+i)%len(q.buf)]
+	return q.buf[(q.head+i)%len(q.buf)], nil
+}
+
+// Gets and returns the first item from the queue.
+func (q *Queue) Pop() (interface{}, error) {
+	item, err := q.Peek()
+	if err != nil {
+		return nil, err
+	}
+
+	return item, q.Remove()
 }
 
 // Remove removes the element from the front of the queue. If you actually
 // want the element, call Peek first. This call panics if the queue is empty.
-func (q *Queue) Remove() {
+func (q *Queue) Remove() error {
 	if q.count <= 0 {
-		panic("queue: Remove() called on empty queue")
+		return errors.New("queue: Remove() called on empty queue")
 	}
 	q.buf[q.head] = nil
 	q.head = (q.head + 1) % len(q.buf)
@@ -85,4 +99,6 @@ func (q *Queue) Remove() {
 	if len(q.buf) > minQueueLen && q.count*4 == len(q.buf) {
 		q.resize()
 	}
+
+	return nil
 }

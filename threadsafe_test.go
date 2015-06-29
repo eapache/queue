@@ -2,8 +2,8 @@ package queue
 
 import "testing"
 
-func TestQueueSimple(t *testing.T) {
-	q := New()
+func TestTsQueueSimple(t *testing.T) {
+	q := NewThreadSafe()
 
 	for i := 0; i < minQueueLen; i++ {
 		q.Add(i)
@@ -16,8 +16,8 @@ func TestQueueSimple(t *testing.T) {
 	}
 }
 
-func TestQueueWrapping(t *testing.T) {
-	q := New()
+func TestTsQueueWrapping(t *testing.T) {
+	q := NewThreadSafe()
 
 	for i := 0; i < minQueueLen; i++ {
 		q.Add(i)
@@ -35,8 +35,8 @@ func TestQueueWrapping(t *testing.T) {
 	}
 }
 
-func TestQueueLength(t *testing.T) {
-	q := New()
+func TestTsQueueLength(t *testing.T) {
+	q := NewThreadSafe()
 
 	if q.Length() != 0 {
 		t.Error("empty queue length not 0")
@@ -56,8 +56,8 @@ func TestQueueLength(t *testing.T) {
 	}
 }
 
-func TestQueueGet(t *testing.T) {
-	q := New()
+func TestTsQueueGet(t *testing.T) {
+	q := NewThreadSafe()
 
 	for i := 0; i < 1000; i++ {
 		q.Add(i)
@@ -69,8 +69,8 @@ func TestQueueGet(t *testing.T) {
 	}
 }
 
-func TestQueuePops(t *testing.T) {
-	q := New()
+func TestTsQueuePops(t *testing.T) {
+	q := NewThreadSafe()
 
 	for i := 0; i < 1000; i++ {
 		q.Add(i)
@@ -83,8 +83,8 @@ func TestQueuePops(t *testing.T) {
 	}
 }
 
-func TestQueueGetOutOfRangeErrors(t *testing.T) {
-	q := New()
+func TestTsQueueGetOutOfRangeErrors(t *testing.T) {
+	q := NewThreadSafe()
 
 	q.Add(1)
 	q.Add(2)
@@ -101,8 +101,8 @@ func TestQueueGetOutOfRangeErrors(t *testing.T) {
 	}
 }
 
-func TestQueuePeekOutOfRangeErrors(t *testing.T) {
-	q := New()
+func TestTsQueuePeekOutOfRangeErrors(t *testing.T) {
+	q := NewThreadSafe()
 
 	if _, err := q.Peek(); err == nil {
 		t.Error("should error when peeking empty queue")
@@ -116,8 +116,8 @@ func TestQueuePeekOutOfRangeErrors(t *testing.T) {
 	}
 }
 
-func TestQueueRemoveOutOfRangeErrors(t *testing.T) {
-	q := New()
+func TestTsQueueRemoveOutOfRangeErrors(t *testing.T) {
+	q := NewThreadSafe()
 
 	if q.Remove() == nil {
 		t.Error("should error when removing empty queue")
@@ -136,8 +136,8 @@ func TestQueueRemoveOutOfRangeErrors(t *testing.T) {
 // is *NOT* considered. On my machine, these benchmarks hit around ~1GB before they've had
 // enough, but if you have less than that available and start swapping, then all bets are off.
 
-func BenchmarkQueueSerial(b *testing.B) {
-	q := New()
+func BenchmarkTsQueueSerial(b *testing.B) {
+	q := NewThreadSafe()
 	for i := 0; i < b.N; i++ {
 		q.Add(nil)
 	}
@@ -147,8 +147,8 @@ func BenchmarkQueueSerial(b *testing.B) {
 	}
 }
 
-func BenchmarkQueueGet(b *testing.B) {
-	q := New()
+func BenchmarkTsQueueGet(b *testing.B) {
+	q := NewThreadSafe()
 	for i := 0; i < b.N; i++ {
 		q.Add(i)
 	}
@@ -158,8 +158,8 @@ func BenchmarkQueueGet(b *testing.B) {
 	}
 }
 
-func BenchmarkQueueTickTock(b *testing.B) {
-	q := New()
+func BenchmarkTsQueueTickTock(b *testing.B) {
+	q := NewThreadSafe()
 	for i := 0; i < b.N; i++ {
 		q.Add(nil)
 		q.Peek()
