@@ -9,8 +9,8 @@ func TestQueueSimple(t *testing.T) {
 		q.Add(i)
 	}
 	for i := 0; i < minQueueLen; i++ {
-		if q.Peek().(int) != i {
-			t.Error("peek", i, "had value", q.Peek())
+		if e, _ := q.Peek(); e.(int) != i {
+			t.Error("peek", i, "had value", e)
 		}
 		q.Remove()
 	}
@@ -28,8 +28,8 @@ func TestQueueWrapping(t *testing.T) {
 	}
 
 	for i := 0; i < minQueueLen; i++ {
-		if q.Peek().(int) != i+3 {
-			t.Error("peek", i, "had value", q.Peek())
+		if e, _ := q.Peek(); e.(int) != i+3 {
+			t.Error("peek", i, "had value", e)
 		}
 		q.Remove()
 	}
@@ -62,67 +62,59 @@ func TestQueueGet(t *testing.T) {
 	for i := 0; i < 1000; i++ {
 		q.Add(i)
 		for j := 0; j < q.Length(); j++ {
-			if q.Get(j).(int) != j {
+			if e, _ := q.Get(j); e.(int) != j {
 				t.Errorf("index %d doesn't contain %d", j, j)
 			}
 		}
 	}
 }
 
-func TestQueueGetOutOfRangePanics(t *testing.T) {
+func TestQueueGetOutOfRangeErrors(t *testing.T) {
 	q := New()
 
 	q.Add(1)
 	q.Add(2)
 	q.Add(3)
 
-	assertPanics(t, "should panic when negative index", func() {
-		q.Get(-1)
-	})
+	_, err := q.Get(-1)
+	if err == nil {
+		t.Error("should haved errored when negative index")
+	}
 
-	assertPanics(t, "should panic when index greater than length", func() {
-		q.Get(4)
-	})
+	_, err = q.Get(4)
+	if err == nil {
+		t.Error("should haved errored when negative index")
+	}
 }
 
-func TestQueuePeekOutOfRangePanics(t *testing.T) {
+func TestQueuePeekOutOfRangeErrors(t *testing.T) {
 	q := New()
 
-	assertPanics(t, "should panic when peeking empty queue", func() {
-		q.Peek()
-	})
+	if _, err := q.Peek(); err == nil {
+		t.Error("should error when peeking empty queue")
+	}
 
 	q.Add(1)
 	q.Remove()
 
-	assertPanics(t, "should panic when peeking emptied queue", func() {
-		q.Peek()
-	})
+	if _, err := q.Peek(); err == nil {
+		t.Error("should error when peeking emptied queue")
+	}
 }
 
-func TestQueueRemoveOutOfRangePanics(t *testing.T) {
+func TestQueueRemoveOutOfRangeErrors(t *testing.T) {
 	q := New()
 
-	assertPanics(t, "should panic when removing empty queue", func() {
-		q.Remove()
-	})
+	if q.Remove() == nil {
+		t.Error("should error when removing empty queue")
+	}
 
 	q.Add(1)
 	q.Remove()
 
-	assertPanics(t, "should panic when removing emptied queue", func() {
-		q.Remove()
-	})
-}
-
-func assertPanics(t *testing.T, name string, f func()) {
-	defer func() {
-		if r := recover(); r == nil {
-			t.Errorf("%s: didn't panic as expected", name)
-		}
-	}()
-
-	f()
+	if q.Remove() == nil {
+		t.Error("should error when removing emptied queue")
+	}
 }
 
 // General warning: Go's benchmark utility (go test -bench .) increases the number of
