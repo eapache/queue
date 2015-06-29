@@ -77,6 +77,16 @@ func (q *Queue) Get(i int) (interface{}, error) {
 	return q.buf[(q.head+i)%len(q.buf)], nil
 }
 
+// Gets and returns the first item from the queue.
+func (q *Queue) Pop() (interface{}, error) {
+	item, err := q.Peek()
+	if err != nil {
+		return nil, err
+	}
+
+	return item, q.Remove()
+}
+
 // Remove removes the element from the front of the queue. If you actually
 // want the element, call Peek first. This call panics if the queue is empty.
 func (q *Queue) Remove() error {
