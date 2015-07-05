@@ -73,6 +73,13 @@ func (q *Queue) Get(i int) interface{} {
 	return q.buf[(q.head+i)%len(q.buf)]
 }
 
+func (q *Queue) Pop() interface{} {
+	item := q.Peek()
+	q.Remove()
+
+	return item
+}
+
 // Remove removes the element from the front of the queue. If you actually
 // want the element, call Peek first. This call panics if the queue is empty.
 func (q *Queue) Remove() {
