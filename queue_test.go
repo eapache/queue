@@ -69,6 +69,20 @@ func TestQueueGet(t *testing.T) {
 	}
 }
 
+func TestQueuePops(t *testing.T) {
+	q := New()
+
+	for i := 0; i < 1000; i++ {
+		q.Add(i)
+	}
+
+	for i := 0; i < 1000; i++ {
+		if q.Pop() != i {
+			t.Errorf("index %d doesn't contain %d", i, i)
+		}
+	}
+}
+
 func TestQueueGetOutOfRangePanics(t *testing.T) {
 	q := New()
 
