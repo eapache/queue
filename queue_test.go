@@ -76,8 +76,8 @@ func TestQueueGetOutOfRangePanics(t *testing.T) {
 	q.Add(2)
 	q.Add(3)
 
-	assertPanics(t, "should panic when negative index", func() {
-		q.Get(-1)
+	assertPanics(t, "should panic when negative index greater than length", func() {
+		q.Get(-4)
 	})
 
 	assertPanics(t, "should panic when index greater than length", func() {
@@ -113,6 +113,33 @@ func TestQueueRemoveOutOfRangePanics(t *testing.T) {
 	assertPanics(t, "should panic when removing emptied queue", func() {
 		q.Remove()
 	})
+}
+
+func TestQueueClear(t *testing.T) {
+	q := New()
+
+	for i := 0; i < 100; i++ {
+		q.Add(i)
+	}
+	if q.Length() != 100 {
+		t.Error("push: queue with 100 elements has length", q.Length())
+	}
+	cap := q.Capacity()
+	q.Clear()
+	if q.Length() != 0 {
+		t.Error("empty queue length not 0 after clear")
+	}
+	if q.Capacity() != cap {
+		t.Error("queue capacity changed after clear")
+	}
+
+	// Check that there are no remaining references after Clear()
+	for i := 0; i < q.Capacity(); i++ {
+		if q.buf[i] != nil {
+			t.Error("queue has non-nil deleted elements after Clear()")
+			break
+		}
+	}
 }
 
 func assertPanics(t *testing.T, name string, f func()) {
