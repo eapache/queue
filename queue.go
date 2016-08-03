@@ -65,8 +65,14 @@ func (q *Queue) Peek() interface{} {
 }
 
 // Get returns the element at index i in the queue. If the index is
-// invalid, the call will panic.
+// invalid, the call will panic. This method accepts both positive and
+// negative index values. Index 0 refers to the first element, and
+// index -1 refers to the last.
 func (q *Queue) Get(i int) interface{} {
+	// If indexing backwards, convert to positive index.
+	if i < 0 {
+		i += q.count
+	}
 	if i < 0 || i >= q.count {
 		panic("queue: Get() called with index out of range")
 	}
