@@ -71,7 +71,7 @@ func (q *Queue) Peek() interface{} {
 func (q *Queue) Get(i int) interface{} {
 	// If indexing backwards, convert to positive index.
 	if i < 0 {
-		i = q.count + i
+		i += q.count
 	}
 	if i < 0 || i >= q.count {
 		panic("queue: Get() called with index out of range")
