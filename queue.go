@@ -98,3 +98,15 @@ func (q *Queue) Remove() {
 		q.resize()
 	}
 }
+
+// Clear removes all elements from the queue, but retains the current capacity.
+func (q *Queue) Clear() {
+	// bitwise modulus
+	mbits := len(q.buf) - 1
+	for h := q.head; h != q.tail; h = (h + 1) & mbits {
+		q.buf[h] = nil
+	}
+	q.head = 0
+	q.tail = 0
+	q.count = 0
+}

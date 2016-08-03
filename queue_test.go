@@ -82,6 +82,34 @@ func TestQueueGetNegative(t *testing.T) {
 	}
 }
 
+func TestQueueClear(t *testing.T) {
+	q := New()
+
+	q.Clear()
+	for i := 0; i < 100; i++ {
+		q.Add(i)
+	}
+	if q.Length() != 100 {
+		t.Error("push: queue with 100 elements has length", q.Length())
+	}
+	cap := len(q.buf)
+	q.Clear()
+	if q.Length() != 0 {
+		t.Error("empty queue length not 0 after clear")
+	}
+	if len(q.buf) != cap {
+		t.Error("queue capacity changed after clear")
+	}
+
+	// Check that there are no remaining references after Clear()
+	for i := 0; i < len(q.buf); i++ {
+		if q.buf[i] != nil {
+			t.Error("queue has non-nil deleted elements after Clear()")
+			break
+		}
+	}
+}
+
 func TestQueueGetOutOfRangePanics(t *testing.T) {
 	q := New()
 
