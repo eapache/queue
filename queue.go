@@ -99,18 +99,6 @@ func (q *Queue) Remove() {
 	}
 }
 
-// Clear removes all elements from the queue, but retains the current capacity.
-func (q *Queue) Clear() {
-	// bitwise modulus
-	mbits := len(q.buf) - 1
-	for h := q.head; h != q.tail; h = (h + 1) & mbits {
-		q.buf[h] = nil
-	}
-	q.head = 0
-	q.tail = 0
-	q.count = 0
-}
-
 // Pop removes and returns the element from the front of the queue. If the
 // queue is empty, the call will panic.
 func (q *Queue) Pop() interface{} {
