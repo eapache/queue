@@ -12,7 +12,10 @@ func TestQueueSimple(t *testing.T) {
 		if q.Peek().(int) != i {
 			t.Error("peek", i, "had value", q.Peek())
 		}
-		q.Remove()
+		x := q.Remove()
+		if x != i {
+			t.Error("remove", i, "had value", x)
+		}
 	}
 }
 
