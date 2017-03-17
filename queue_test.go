@@ -17,6 +17,15 @@ func TestQueueSimple(t *testing.T) {
 			t.Error("remove", i, "had value", x)
 		}
 	}
+
+	for i := 0; i < minQueueLen; i++ {
+		q.Add(i)
+	}
+	for i := 0; i < minQueueLen; i++ {
+		if q.Pop().(int) != i {
+			t.Error("peek", i, "had value", q.Peek())
+		}
+	}
 }
 
 func TestQueueWrapping(t *testing.T) {
@@ -131,6 +140,24 @@ func TestQueueRemoveOutOfRangePanics(t *testing.T) {
 	})
 }
 
+func TestQueuePopOutOfRangePanics(t *testing.T) {
+	q := New()
+
+	assertPanics(t, "should panic when popping empty queue", func() {
+		q.Pop()
+	})
+
+	q.Add(1)
+	x := q.Pop()
+	if x != 1 {
+		t.Fatal("Pop() returned wrong value")
+	}
+
+	assertPanics(t, "should panic when popping emptied queue", func() {
+		q.Remove()
+	})
+}
+
 func assertPanics(t *testing.T, name string, f func()) {
 	defer func() {
 		if r := recover(); r == nil {
@@ -154,6 +181,16 @@ func BenchmarkQueueSerial(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		q.Peek()
 		q.Remove()
+	}
+}
+
+func BenchmarkQueuePopSerial(b *testing.B) {
+	q := New()
+	for i := 0; i < b.N; i++ {
+		q.Add(nil)
+	}
+	for i := 0; i < b.N; i++ {
+		q.Pop()
 	}
 }
 

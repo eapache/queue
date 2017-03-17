@@ -100,3 +100,21 @@ func (q *Queue) Remove() interface{} {
 	}
 	return ret
 }
+
+// Pop removes and returns the element from the front of the queue. If the
+// queue is empty, the call will panic.
+func (q *Queue) Pop() interface{} {
+	if q.count <= 0 {
+		panic("queue: Pop() called on empty queue")
+	}
+	ret := q.buf[q.head]
+	q.buf[q.head] = nil
+	// bitwise modulus
+	q.head = (q.head + 1) & (len(q.buf) - 1)
+	q.count--
+	// Resize down if buffer 1/4 full.
+	if len(q.buf) > minQueueLen && (q.count<<2) == len(q.buf) {
+		q.resize()
+	}
+	return ret
+}
