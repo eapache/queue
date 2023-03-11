@@ -176,3 +176,29 @@ func BenchmarkQueueTickTock(b *testing.B) {
 		q.Remove()
 	}
 }
+
+func TestQueuePush(t *testing.T) {
+	q := New()
+
+	q.Push(1)
+	q.Push(2)
+	q.Push(3)
+
+	if q.Length() != 3 {
+		t.Error("Queue length not 3")
+	}
+}
+
+func TestQueuePop(t *testing.T) {
+	q := New()
+	value := q.Pop()
+	if value != nil {
+		t.Error("value is not nil")
+	}
+
+	q.Push(1)
+	value = q.Pop()
+	if value != 1 {
+		t.Error("value is not 1")
+	}
+}

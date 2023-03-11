@@ -7,12 +7,17 @@ The queue implemented here is as fast as it is for an additional reason: it is *
 */
 package queue
 
+import (
+	"sync"
+)
+
 // minQueueLen is smallest capacity that queue may have.
 // Must be power of 2 for bitwise modulus: x % n == x & (n - 1).
 const minQueueLen = 16
 
 // Queue represents a single instance of the queue data structure.
 type Queue struct {
+	sync.RWMutex
 	buf               []interface{}
 	head, tail, count int
 }
@@ -26,6 +31,9 @@ func New() *Queue {
 
 // Length returns the number of elements currently stored in the queue.
 func (q *Queue) Length() int {
+	q.RLock()
+	defer q.RUnlock()
+
 	return q.count
 }
 
@@ -99,4 +107,25 @@ func (q *Queue) Remove() interface{} {
 		q.resize()
 	}
 	return ret
+}
+
+// Add puts an element on the end of the queue, with mutex
+func (q *Queue) Push(elem interface{}) {
+    q.Lock()
+	defer q.Unlock()
+
+	q.Add(elem)
+}
+
+// Remove removes and returns the element from the front of the queue.
+// If the queue is empty, return nil.
+// Safe with mutex
+func (q *Queue) Pop() interface{} {
+	q.Lock()
+	defer q.Unlock()
+
+	if q.count <= 0 {
+		return nil
+	}
+	return q.Remove();
 }
