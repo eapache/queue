@@ -1,0 +1,29 @@
+name: Build
+on: [push]
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go env
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.19
+
+    - name: Check out code into the Go module directory
+      uses: actions/checkout@v3
+
+    - name: Get dependencies & build
+      run: go build -mod=readonly -v
+
+    - name: Test
+      run: go test -v -covermode=count -coverprofile=profile.cov
+
+    - name: Send test results to coveralls
+      env:
+        COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        go install github.com/mattn/goveralls@latest
+        $(go env GOPATH)/bin/goveralls -coverprofile=profile.cov -service=github
