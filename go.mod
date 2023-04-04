@@ -1,3 +1,3 @@
 module github.com/eapache/queue
 
-go 1.20
+go 1.2
