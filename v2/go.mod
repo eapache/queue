@@ -1,2 +1,3 @@
-module github.com/lil5/queue/v2
+module github.com/eapache/queue/v2
+
 go 1.16
