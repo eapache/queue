@@ -18,6 +18,6 @@ jobs:
     - name: Set up Golang
       uses: actions/setup-go@v4
       with:
-        go-version: ${{ matrix.ruby-version }}
+        go-version: ${{ matrix.golang-version }}
     - name: Run tests
       run: go test
