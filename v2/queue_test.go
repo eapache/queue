@@ -141,10 +141,11 @@ func assertPanics(t *testing.T, name string, f func()) {
 	f()
 }
 
-// General warning: Go's benchmark utility (go test -bench .) increases the number of
+// WARNING: Go's benchmark utility (go test -bench .) increases the number of
 // iterations until the benchmarks take a reasonable amount of time to run; memory usage
-// is *NOT* considered. On my machine, these benchmarks hit around ~1GB before they've had
-// enough, but if you have less than that available and start swapping, then all bets are off.
+// is *NOT* considered. On a fast CPU, these benchmarks can fill hundreds of GB of memory
+// (and then hang when they start to swap). You can manually control the number of iterations
+// with the `-benchtime` argument. Passing `-benchtime 1000000x` seems to be about right.
 
 func BenchmarkQueueSerial(b *testing.B) {
 	q := New[any]()
