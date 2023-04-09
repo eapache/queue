@@ -9,6 +9,8 @@ package queue
 
 import "errors"
 
+import "sync"
+
 // minQueueLen is smallest capacity that queue may have.
 // Must be power of 2 for bitwise modulus: x % n == x & (n - 1).
 const minQueueLen = 16
@@ -22,6 +24,7 @@ var (
 type Queue[V any] struct {
 	buf               []*V
 	head, tail, count int
+	mu                sync.Mutex
 }
 
 // New constructs and returns a new Queue.
@@ -55,6 +58,9 @@ func (q *Queue[V]) resize() {
 
 // Add puts an element on the end of the queue.
 func (q *Queue[V]) Add(elem V) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+
 	if q.count == len(q.buf) {
 		q.resize()
 	}
@@ -93,6 +99,8 @@ func (q *Queue[V]) Get(i int) (V, error) {
 // Remove removes and returns the element from the front of the queue. If the
 // queue is empty, the call will panic.
 func (q *Queue[V]) Remove() (V, error) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
 	if q.count <= 0 {
 		return *new(V), ErrQueueEmpty
 	}

@@ -7,6 +7,8 @@ The queue implemented here is as fast as it is for an additional reason: it is *
 */
 package queue
 
+import "sync"
+
 import (
 	"errors"
 )
@@ -24,6 +26,7 @@ var (
 type Queue struct {
 	buf               []interface{}
 	head, tail, count int
+	mu                sync.Mutex
 }
 
 // New constructs and returns a new Queue.
@@ -57,6 +60,9 @@ func (q *Queue) resize() {
 
 // Add puts an element on the end of the queue.
 func (q *Queue) Add(elem interface{}) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+
 	if q.count == len(q.buf) {
 		q.resize()
 	}
@@ -95,6 +101,8 @@ func (q *Queue) Get(i int) (interface{}, error) {
 // Remove removes and returns the element from the front of the queue. If the
 // queue is empty, the call will return error.
 func (q *Queue) Remove() (interface{}, error) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
 	if q.count <= 0 {
 		return nil, ErrQueueEmpty
 	}
