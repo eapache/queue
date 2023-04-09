@@ -26,7 +26,7 @@ func TestQueueWrapping(t *testing.T) {
 		q.Add(i)
 	}
 	for i := 0; i < 3; i++ {
-		_, _ = q.Remove()
+		q.Remove()
 		q.Add(minQueueLen + i)
 	}
 
@@ -34,7 +34,7 @@ func TestQueueWrapping(t *testing.T) {
 		if r, _ := q.Peek(); r != i+3 {
 			t.Error("peek", i, "had value", r)
 		}
-		_, _ = q.Remove()
+		q.Remove()
 	}
 }
 
@@ -52,7 +52,7 @@ func TestQueueLength(t *testing.T) {
 		}
 	}
 	for i := 0; i < 1000; i++ {
-		_, _ = q.Remove()
+		q.Remove()
 		if q.Length() != 1000-i-1 {
 			t.Error("removing: queue with", 1000-i-i, "elements has length", q.Length())
 		}
@@ -106,7 +106,7 @@ func TestQueuePeekOutOfRangePanics(t *testing.T) {
 	assertError(t, "should return empty queue error when peeking empty queue", err, ErrQueueEmpty)
 
 	q.Add(1)
-	_, _ = q.Remove()
+	q.Remove()
 
 	_, err = q.Peek()
 	assertError(t, "should return empty queue error when peeking emptied queue", err, ErrQueueEmpty)
@@ -119,7 +119,7 @@ func TestQueueRemoveOutOfRangePanics(t *testing.T) {
 	assertError(t, "should return empty queue error when removing empty queue", err, ErrQueueEmpty)
 
 	q.Add(1)
-	_, _ = q.Remove()
+	q.Remove()
 
 	_, err = q.Remove()
 	assertError(t, "should return empty queue error when removing emptied queue", err, ErrQueueEmpty)
@@ -143,8 +143,8 @@ func BenchmarkQueueSerial(b *testing.B) {
 		q.Add(nil)
 	}
 	for i := 0; i < b.N; i++ {
-		_, _ = q.Peek()
-		_, _ = q.Remove()
+		q.Peek()
+		q.Remove()
 	}
 }
 
@@ -155,7 +155,7 @@ func BenchmarkQueueGet(b *testing.B) {
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, _ = q.Get(i)
+		q.Get(i)
 	}
 }
 
@@ -163,7 +163,7 @@ func BenchmarkQueueTickTock(b *testing.B) {
 	q := New[any]()
 	for i := 0; i < b.N; i++ {
 		q.Add(nil)
-		_, _ = q.Peek()
-		_, _ = q.Remove()
+		q.Peek()
+		q.Remove()
 	}
 }

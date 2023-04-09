@@ -7,10 +7,9 @@ The queue implemented here is as fast as it is for an additional reason: it is *
 */
 package queue
 
-import "sync"
-
 import (
 	"errors"
+	"sync"
 )
 
 // minQueueLen is smallest capacity that queue may have.
