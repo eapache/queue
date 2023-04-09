@@ -67,9 +67,6 @@ func (q *Queue) Add(elem interface{}) {
 // Peek returns the element at the head of the queue. This call panics
 // if the queue is empty.
 func (q *Queue) Peek() interface{} {
-	q.mu.Lock()
-	defer q.mu.Unlock()
-
 	if q.count <= 0 {
 		panic("queue: Peek() called on empty queue")
 	}
@@ -81,7 +78,6 @@ func (q *Queue) Peek() interface{} {
 // negative index values. Index 0 refers to the first element, and
 // index -1 refers to the last.
 func (q *Queue) Get(i int) interface{} {
-
 	// If indexing backwards, convert to positive index.
 	if i < 0 {
 		i += q.count
