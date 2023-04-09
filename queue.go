@@ -103,6 +103,7 @@ func (q *Queue) Get(i int) (interface{}, error) {
 func (q *Queue) Remove() (interface{}, error) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
+
 	if q.count <= 0 {
 		return nil, ErrQueueEmpty
 	}

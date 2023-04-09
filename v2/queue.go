@@ -71,7 +71,7 @@ func (q *Queue[V]) Add(elem V) {
 	q.count++
 }
 
-// Peek returns the element at the head of the queue. This call panics
+// Peek returns the element at the head of the queue. This call return error
 // if the queue is empty.
 func (q *Queue[V]) Peek() (V, error) {
 	if q.count <= 0 {
@@ -81,7 +81,7 @@ func (q *Queue[V]) Peek() (V, error) {
 }
 
 // Get returns the element at index i in the queue. If the index is
-// invalid, the call will panic. This method accepts both positive and
+// invalid, the call will return error. This method accepts both positive and
 // negative index values. Index 0 refers to the first element, and
 // index -1 refers to the last.
 func (q *Queue[V]) Get(i int) (V, error) {
@@ -97,10 +97,11 @@ func (q *Queue[V]) Get(i int) (V, error) {
 }
 
 // Remove removes and returns the element from the front of the queue. If the
-// queue is empty, the call will panic.
+// queue is empty, the call will return error.
 func (q *Queue[V]) Remove() (V, error) {
 	q.mu.Lock()
 	defer q.mu.Unlock()
+
 	if q.count <= 0 {
 		return *new(V), ErrQueueEmpty
 	}
