@@ -7,9 +7,16 @@ The queue implemented here is as fast as it is for an additional reason: it is *
 */
 package queue
 
+import "errors"
+
 // minQueueLen is smallest capacity that queue may have.
 // Must be power of 2 for bitwise modulus: x % n == x & (n - 1).
 const minQueueLen = 16
+
+var (
+	ErrQueueEmpty      = errors.New("queue is empty")
+	ErrIndexOutOfRange = errors.New("index is out of range")
+)
 
 // Queue represents a single instance of the queue data structure.
 type Queue[V any] struct {
@@ -60,34 +67,34 @@ func (q *Queue[V]) Add(elem V) {
 
 // Peek returns the element at the head of the queue. This call panics
 // if the queue is empty.
-func (q *Queue[V]) Peek() V {
+func (q *Queue[V]) Peek() (V, error) {
 	if q.count <= 0 {
-		panic("queue: Peek() called on empty queue")
+		return *new(V), ErrQueueEmpty
 	}
-	return *(q.buf[q.head])
+	return *(q.buf[q.head]), nil
 }
 
 // Get returns the element at index i in the queue. If the index is
 // invalid, the call will panic. This method accepts both positive and
 // negative index values. Index 0 refers to the first element, and
 // index -1 refers to the last.
-func (q *Queue[V]) Get(i int) V {
+func (q *Queue[V]) Get(i int) (V, error) {
 	// If indexing backwards, convert to positive index.
 	if i < 0 {
 		i += q.count
 	}
 	if i < 0 || i >= q.count {
-		panic("queue: Get() called with index out of range")
+		return *new(V), ErrIndexOutOfRange
 	}
 	// bitwise modulus
-	return *(q.buf[(q.head+i)&(len(q.buf)-1)])
+	return *(q.buf[(q.head+i)&(len(q.buf)-1)]), nil
 }
 
 // Remove removes and returns the element from the front of the queue. If the
 // queue is empty, the call will panic.
-func (q *Queue[V]) Remove() V {
+func (q *Queue[V]) Remove() (V, error) {
 	if q.count <= 0 {
-		panic("queue: Remove() called on empty queue")
+		return *new(V), ErrQueueEmpty
 	}
 	ret := q.buf[q.head]
 	q.buf[q.head] = nil
@@ -98,5 +105,5 @@ func (q *Queue[V]) Remove() V {
 	if len(q.buf) > minQueueLen && (q.count<<2) == len(q.buf) {
 		q.resize()
 	}
-	return *ret
+	return *ret, nil
 }
