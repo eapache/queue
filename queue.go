@@ -7,6 +7,8 @@ The queue implemented here is as fast as it is for an additional reason: it is *
 */
 package queue
 
+import "sync"
+
 // minQueueLen is smallest capacity that queue may have.
 // Must be power of 2 for bitwise modulus: x % n == x & (n - 1).
 const minQueueLen = 16
@@ -15,6 +17,7 @@ const minQueueLen = 16
 type Queue struct {
 	buf               []interface{}
 	head, tail, count int
+	mu                sync.Mutex
 }
 
 // New constructs and returns a new Queue.
@@ -48,6 +51,9 @@ func (q *Queue) resize() {
 
 // Add puts an element on the end of the queue.
 func (q *Queue) Add(elem interface{}) {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+
 	if q.count == len(q.buf) {
 		q.resize()
 	}
@@ -61,6 +67,9 @@ func (q *Queue) Add(elem interface{}) {
 // Peek returns the element at the head of the queue. This call panics
 // if the queue is empty.
 func (q *Queue) Peek() interface{} {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+
 	if q.count <= 0 {
 		panic("queue: Peek() called on empty queue")
 	}
@@ -72,6 +81,7 @@ func (q *Queue) Peek() interface{} {
 // negative index values. Index 0 refers to the first element, and
 // index -1 refers to the last.
 func (q *Queue) Get(i int) interface{} {
+
 	// If indexing backwards, convert to positive index.
 	if i < 0 {
 		i += q.count
@@ -86,6 +96,9 @@ func (q *Queue) Get(i int) interface{} {
 // Remove removes and returns the element from the front of the queue. If the
 // queue is empty, the call will panic.
 func (q *Queue) Remove() interface{} {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+
 	if q.count <= 0 {
 		panic("queue: Remove() called on empty queue")
 	}
@@ -95,6 +108,7 @@ func (q *Queue) Remove() interface{} {
 	q.head = (q.head + 1) & (len(q.buf) - 1)
 	q.count--
 	// Resize down if buffer 1/4 full.
+
 	if len(q.buf) > minQueueLen && (q.count<<2) == len(q.buf) {
 		q.resize()
 	}
